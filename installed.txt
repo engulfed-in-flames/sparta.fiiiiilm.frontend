@@ -1,2 +1,0 @@
-1. styled-components @types/styled-components styled-reset
-2. react-router-dom
