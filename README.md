@@ -1,7 +1,6 @@
-# Template - REACT with Typescript and Chakra UI
+# Fiiiilm
 
 React, React Router, Typescript and Chakra UI💕
 
-# Command
-
-npx create-react-app my-app --template @chakra-ui/typescript
+- Tanstack Query
+- React Icons

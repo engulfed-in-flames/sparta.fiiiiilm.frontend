@@ -11,7 +11,6 @@ const myRouter = createBrowserRouter(
         {
           path: "",
           element: <Home />,
-          errorElement: <h1>404 Not Found</h1>,
         },
       ],
       errorElement: <h1>404 Not Found</h1>,

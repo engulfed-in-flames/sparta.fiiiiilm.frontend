@@ -5,9 +5,9 @@ import Footer from "./Footer";
 function Root() {
   return (
     <>
-      <Header></Header>
+      <Header />
       <Outlet />
-      <Footer></Footer>
+      <Footer />
     </>
   );
 }
