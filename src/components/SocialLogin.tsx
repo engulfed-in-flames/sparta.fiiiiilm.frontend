@@ -24,7 +24,7 @@ export default function SocialLogin() {
           color={"white"}
           py={6}
         >
-          Continue With Github
+          <Text w={48}>Continue With Github</Text>
         </Button>
         <Button
           href="#"
@@ -34,10 +34,10 @@ export default function SocialLogin() {
           colorScheme={"yellow"}
           py={6}
         >
-          Continue With Kakaotalk
+          <Text w={48}>Continue With Kakaotalk</Text>
         </Button>
         <Button as="a" leftIcon={<FcGoogle />} w={"100%"} py={6}>
-          Continue With Google
+          <Text w={48}>Continue With Google</Text>
         </Button>
       </VStack>
     </Box>

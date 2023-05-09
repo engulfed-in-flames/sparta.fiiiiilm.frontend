@@ -9,6 +9,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { CgMenu } from "react-icons/cg";
@@ -72,8 +73,12 @@ export default function Header() {
             <Avatar size={"sm"} />
           </MenuButton>
           <MenuList>
-            <MenuItem onClick={onLoginOpen}>로그인</MenuItem>
-            <MenuItem onClick={onSignupOpen}>회원가입</MenuItem>
+            <MenuItem onClick={onLoginOpen}>
+              <Text fontSize={24}>로그인</Text>
+            </MenuItem>
+            <MenuItem onClick={onSignupOpen}>
+              <Text fontSize={24}>회원가입</Text>
+            </MenuItem>
           </MenuList>
         </Menu>
       </HStack>

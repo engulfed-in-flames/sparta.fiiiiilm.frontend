@@ -1,4 +1,4 @@
-import { Box, HStack, Skeleton, VStack } from "@chakra-ui/react";
+import { Box, Grid, HStack, Skeleton } from "@chakra-ui/react";
 import React, { useState } from "react";
 
 export default function RecentReviews() {
@@ -6,7 +6,7 @@ export default function RecentReviews() {
   const arr = [1, 1, 1, 1, 1, 1];
   return (
     <Box
-      w={"95%"}
+      w={"90%"}
       display={"grid"}
       gridTemplateColumns={"1fr 1fr"}
       rowGap={8}
@@ -25,10 +25,9 @@ export default function RecentReviews() {
           >
             <HStack w={"full"} h={"full"} overflow={"hidden"}>
               <Skeleton h={"full"} aspectRatio={"calc(3/4)"}></Skeleton>
-              <VStack
+              <Grid
                 w={"full"}
                 h={"full"}
-                display={"grid"}
                 gridTemplateRows={"1fr 1fr 1fr 4fr"}
                 rowGap={2}
                 alignItems={"flex-start"}
@@ -37,7 +36,7 @@ export default function RecentReviews() {
                 <Skeleton w={"60%"} h={"full"}></Skeleton>
                 <Skeleton w={"30%"} h={"full"}></Skeleton>
                 <Skeleton w={"full"} h={"full"}></Skeleton>
-              </VStack>
+              </Grid>
             </HStack>
           </Box>
         ) : (

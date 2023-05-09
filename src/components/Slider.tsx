@@ -1,14 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, Variants, motion } from "framer-motion";
-import {
-  Box,
-  ButtonGroup,
-  IconButton,
-  Skeleton,
-  Text,
-  chakra,
-} from "@chakra-ui/react";
+import { Box, IconButton, Skeleton, Text, chakra } from "@chakra-ui/react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const sliderVars: Variants = {
   invisible: (isRightBtn: boolean) => ({
@@ -27,8 +21,9 @@ const InnerSlider = chakra(motion.div, {});
 const SliderCard = chakra(motion.div, {});
 
 export default function Slider() {
+  const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const PAGE_OFFSET = 3;
-  const arr = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+  const pageLength = Math.floor(arr.length / PAGE_OFFSET);
   const [isLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [sliderAnimationExit, setSliderAnimationExit] = useState(true);
@@ -39,22 +34,20 @@ export default function Slider() {
 
   const moveSliderLeft = () => {
     if (!sliderAnimationExit) return;
-    console.log("Clicked!");
-    setIsRightBtn(true);
+    setIsRightBtn(false);
     setSliderAnimationExit(false);
-    const pageLength = Math.floor((arr.length - 1) / PAGE_OFFSET);
-    setPage((_page) => (_page > 0 && _page < pageLength ? _page + 1 : 1));
+    setPage((prev) => (prev > 1 && prev <= pageLength ? prev - 1 : pageLength));
   };
   const moveSliderRight = () => {
     if (!sliderAnimationExit) return;
-    console.log("Clicked!");
-    setIsRightBtn(false);
+    setIsRightBtn(true);
     setSliderAnimationExit(false);
-    const pageLength = Math.floor((arr.length - 1) / PAGE_OFFSET);
-    setPage((_page) =>
-      _page > 1 && _page <= pageLength ? _page - 1 : pageLength
-    );
+    setPage((prev) => (prev >= 1 && prev < pageLength ? prev + 1 : 1));
   };
+
+  useEffect(() => {
+    console.log("Updated page: ", page);
+  }, [page]);
 
   return (
     <OuterSlider position={"relative"} minW={"660px"} aspectRatio={"2/0.85"}>
@@ -108,27 +101,28 @@ export default function Slider() {
         >
           {arr
             .slice(PAGE_OFFSET * (page - 1), PAGE_OFFSET * page)
-            .map((_, index) =>
+            .map((value, index) =>
               isLoading ? (
-                <Skeleton
-                  key={index}
-                  cursor={"pointer"}
-                  position="relative"
-                  aspectRatio={"calc(3/4)"}
-                  minH={60}
-                  bg={"gray.400"}
-                  borderRadius={"md"}
-                >
-                  <Box
-                    zIndex={99}
-                    position={"absolute"}
-                    top={0}
-                    left={0}
-                    right={0}
+                <Link to={`/detail?movieId=${value}`} key={index}>
+                  <Skeleton
+                    cursor={"pointer"}
+                    position="relative"
+                    aspectRatio={"calc(3/4)"}
+                    minH={60}
+                    bg={"gray.400"}
+                    borderRadius={"md"}
                   >
-                    <Text fontSize={32}>1</Text>
-                  </Box>
-                </Skeleton>
+                    <Box
+                      zIndex={99}
+                      position={"absolute"}
+                      top={0}
+                      left={0}
+                      right={0}
+                    >
+                      <Text fontSize={32}>1</Text>
+                    </Box>
+                  </Skeleton>
+                </Link>
               ) : (
                 <SliderCard
                   key={index}
