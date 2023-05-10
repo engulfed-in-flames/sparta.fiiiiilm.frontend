@@ -11,7 +11,7 @@ export default function MovieDetail() {
       {isLoading ? (
         <Box maxW={"1600px"} minW={"880px"} mx={"auto"}>
           <Movie />
-          <Divider my={12} />
+          <Divider mb={12} />
           <Box w={"80%"} mx={"auto"} mb={12}>
             <Heading>관람평</Heading>
           </Box>

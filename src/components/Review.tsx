@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Avatar,
   Box,
-  Button,
   Divider,
   Flex,
   HStack,
@@ -15,39 +14,35 @@ import {
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { motion } from "framer-motion";
 
-interface IReviewProps {
-  key: number;
-}
-
 const LikeButton = chakra(motion.button, {});
 
-export default function Review({ key }: IReviewProps) {
+export default function Review() {
   const [like, setLike] = useState(false);
   const onLikeClick = () => {
     setLike((prev) => !prev);
   };
   return (
-    <Box key={key} userSelect={"none"} w={"full"} h={"400px"} minH={"320px"}>
+    <Box userSelect={"none"} w={"full"} h={"280px"} minH={"200px"}>
       <HStack h={"100%"}>
         <Flex w={24} h={"full"} alignItems={"flex-start"} mr={4}>
-          <SkeletonCircle size={"20"}>
+          <SkeletonCircle size={"16"}>
             <Avatar size={"md"} />
           </SkeletonCircle>
         </Flex>
         <VStack
-          spacing={8}
+          spacing={4}
           w={"full"}
           h={"full"}
           alignItems={"flex-start"}
           py={4}
         >
           <Skeleton w={"40%"}>
-            <Box h={12}></Box>
-          </Skeleton>
-          <Skeleton w={"60%"} my={4}>
             <Box h={8}></Box>
           </Skeleton>
-          <SkeletonText spacing={4} w={"full"} skeletonHeight={8}>
+          <Skeleton w={"60%"} my={4}>
+            <Box h={6}></Box>
+          </Skeleton>
+          <SkeletonText spacing={2} w={"full"} skeletonHeight={6}>
             <Box h={40}></Box>
           </SkeletonText>
           <LikeButton
@@ -63,7 +58,6 @@ export default function Review({ key }: IReviewProps) {
           </LikeButton>
         </VStack>
       </HStack>
-
       <Divider />
     </Box>
   );

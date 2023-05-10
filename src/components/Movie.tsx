@@ -3,6 +3,7 @@ import {
   Box,
   Grid,
   HStack,
+  Image,
   Skeleton,
   SkeletonText,
   VStack,
@@ -10,9 +11,9 @@ import {
 
 export default function Movie() {
   return (
-    <HStack px={24} mx={"auto"} minH={"480px"}>
-      <Skeleton minW={"320px"} aspectRatio={"calc(3/4)"}>
-        <Box h={"full"}></Box>
+    <HStack px={12} mx={"auto"} minH={"480px"}>
+      <Skeleton>
+        <Box minW={"280px"} aspectRatio={"calc(3/4)"}></Box>
       </Skeleton>
       <VStack
         spacing={2}
@@ -23,7 +24,7 @@ export default function Movie() {
         alignItems={"flex-start"}
       >
         <Skeleton w={"60%"}>
-          <Box h={14}></Box>
+          <Box h={12}></Box>
         </Skeleton>
         <HStack w={"full"}>
           <Skeleton w={"10%"}>
@@ -49,9 +50,9 @@ export default function Movie() {
           columnGap={2}
           mt={4}
         >
-          <Skeleton h={24} />
-          <Skeleton h={24} />
-          <Skeleton h={24} />
+          <Skeleton h={20} />
+          <Skeleton h={20} />
+          <Skeleton h={20} />
         </Grid>
       </VStack>
     </HStack>

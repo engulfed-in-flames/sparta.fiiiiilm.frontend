@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Button,
+  Flex,
   HStack,
   IconButton,
   Image,
@@ -11,14 +12,19 @@ import {
   MenuList,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { CgMenu } from "react-icons/cg";
 import { FaMoon } from "react-icons/fa";
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
 import { Link } from "react-router-dom";
+import useUser from "../hooks/useUser";
+import Cookies from "js-cookie";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Header() {
+  const { isUserLoading, user, isLoggedIn } = useUser();
   const {
     isOpen: isLoginOpen,
     onOpen: onLoginOpen,
@@ -30,12 +36,25 @@ export default function Header() {
     onClose: onSignupClose,
   } = useDisclosure();
 
+  const queryClient = useQueryClient();
+  const toast = useToast();
+
+  const onLogout = () => {
+    Cookies.remove("access");
+    Cookies.remove("refresh");
+    queryClient.refetchQueries(["me"]);
+    toast({
+      title: "로그아웃",
+      status: "success",
+      position: "bottom-right",
+      duration: 3000,
+    });
+  };
   return (
     <HStack
       userSelect={"none"}
       w={"full"}
       px={12}
-      mb={12}
       boxShadow={"base"}
       justifyContent={"space-between"}
     >
@@ -51,7 +70,7 @@ export default function Header() {
           />
         </Link>
       </Box>
-      <HStack>
+      <Flex>
         <IconButton
           icon={<FaMoon />}
           aria-label="Night Mode"
@@ -73,15 +92,32 @@ export default function Header() {
             <Avatar size={"sm"} />
           </MenuButton>
           <MenuList>
-            <MenuItem onClick={onLoginOpen}>
-              <Text fontSize={24}>로그인</Text>
-            </MenuItem>
-            <MenuItem onClick={onSignupOpen}>
-              <Text fontSize={24}>회원가입</Text>
-            </MenuItem>
+            {!isUserLoading && !isLoggedIn ? (
+              <>
+                <MenuItem onClick={onLoginOpen}>
+                  <Text fontSize={18}>로그인</Text>
+                </MenuItem>
+                <MenuItem onClick={onSignupOpen}>
+                  <Text fontSize={18}>회원가입</Text>
+                </MenuItem>
+              </>
+            ) : (
+              <>
+                <Link to="/me">
+                  <MenuItem>
+                    <Text fontSize={16}></Text>마이페이지
+                  </MenuItem>
+                </Link>
+                <MenuItem onClick={onLogout}>
+                  <Text fontSize={16} color={"gray.400"}>
+                    로그아웃
+                  </Text>
+                </MenuItem>
+              </>
+            )}
           </MenuList>
         </Menu>
-      </HStack>
+      </Flex>
       <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
       <SignupModal isOpen={isSignupOpen} onClose={onSignupClose} />
     </HStack>

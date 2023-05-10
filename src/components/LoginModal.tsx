@@ -11,16 +11,69 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { MdAlternateEmail, MdLock } from "react-icons/md";
 import SocialLogin from "./SocialLogin";
+import { useForm } from "react-hook-form";
+import { fetchLogin } from "../api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface ILoginModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+interface IForm {
+  email: string;
+  password: string;
+}
+
+interface ILoginResult {
+  result: string;
+}
+
 export default function LoginModal({ isOpen, onClose }: ILoginModalProps) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<IForm>();
+
+  const queryClient = useQueryClient();
+  const toast = useToast();
+
+  const mutation = useMutation(fetchLogin, {
+    onMutate: () => {
+      console.log("Mutation is in progess.");
+    },
+    onSuccess: () => {
+      toast({
+        title: "로그인",
+        description: "환영합니다",
+        status: "success",
+        position: "bottom-right",
+        duration: 3000,
+      });
+      onClose();
+      reset();
+      queryClient.refetchQueries(["me"]);
+    },
+    onError: () => {
+      toast({
+        title: "로그인 실패",
+        status: "error",
+        position: "bottom-right",
+        duration: 3000,
+      });
+    },
+  });
+
+  const onSubmit = ({ email, password }: IForm) => {
+    mutation.mutate({ email, password });
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -29,7 +82,7 @@ export default function LoginModal({ isOpen, onClose }: ILoginModalProps) {
           <Text fontSize={32}>로그인</Text>
         </ModalHeader>
         <ModalCloseButton top={10} right={6} />
-        <ModalBody>
+        <ModalBody as={"form"} onSubmit={handleSubmit(onSubmit)}>
           <InputGroup mb={2}>
             <InputLeftElement
               pointerEvents={"none"}
@@ -37,6 +90,7 @@ export default function LoginModal({ isOpen, onClose }: ILoginModalProps) {
               pt={2}
             />
             <Input
+              {...register("email", { required: true })}
               type={"email"}
               placeholder="이메일"
               required
@@ -51,6 +105,7 @@ export default function LoginModal({ isOpen, onClose }: ILoginModalProps) {
               pt={2}
             />
             <Input
+              {...register("password", { required: true })}
               type={"password"}
               placeholder="비밀번호"
               required

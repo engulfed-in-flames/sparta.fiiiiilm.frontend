@@ -1,8 +1,8 @@
+import React from "react";
 import { Box, Button, Divider, HStack, Text, VStack } from "@chakra-ui/react";
 import { AiFillGithub } from "react-icons/ai";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import { FcGoogle } from "react-icons/fc";
-import React from "react";
 
 export default function SocialLogin() {
   return (

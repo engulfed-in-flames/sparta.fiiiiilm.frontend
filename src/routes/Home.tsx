@@ -4,7 +4,7 @@ import Slider from "../components/Slider";
 
 export default function Home() {
   return (
-    <Box minH={"200vh"} mx={12}>
+    <Box minH={"200vh"} mt={12} mx={12}>
       <Box mb={12}>
         <Heading>주간 박스오피스</Heading>
       </Box>
