@@ -43,3 +43,26 @@ export const fetchMe = async () =>
       },
     })
     .then((response) => response.data);
+
+export const kakaoLogin = async (code: string) => {
+  const response = await axiosInstance.post(
+    "users/kakao-login/",
+    {
+      code,
+    },
+    {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+      },
+    }
+  );
+  if (response.data) {
+    const { access, refresh } = response.data;
+    Cookie.set("access", access);
+    Cookie.set("refresh", refresh);
+    console.log(typeof access);
+    return true;
+  } else {
+    return false;
+  }
+};

@@ -5,6 +5,18 @@ import { RiKakaoTalkFill } from "react-icons/ri";
 import { FcGoogle } from "react-icons/fc";
 
 export default function SocialLogin() {
+  const kakaoParams = {
+    client_id: "fb88d01bde4577bb81efb4c4d55db86b",
+    redirect_uri: "http://127.0.0.1:3000/social/kakao",
+    response_type: "code",
+  };
+  const kakaoSearchParams = new URLSearchParams(kakaoParams).toString();
+  const kakaoOauthUrl = `https://kauth.kakao.com/oauth/authorize?${kakaoSearchParams}`;
+
+  const githubParams = {};
+  const githubSearchParams = new URLSearchParams(githubParams).toString();
+  const githubOauthUrl = "";
+
   return (
     <Box>
       <HStack>
@@ -27,7 +39,7 @@ export default function SocialLogin() {
           <Text w={48}>Continue With Github</Text>
         </Button>
         <Button
-          href="#"
+          href={kakaoOauthUrl}
           as="a"
           leftIcon={<RiKakaoTalkFill />}
           w={"100%"}

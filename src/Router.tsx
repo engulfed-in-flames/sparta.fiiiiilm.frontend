@@ -3,6 +3,9 @@ import Root from "./components/Root";
 import Home from "./routes/Home";
 import MovieDetail from "./routes/MovieDetail";
 import Me from "./routes/Me";
+import KakaoConfirm from "./routes/KakaoConfirm";
+import GithubConfirm from "./routes/GithubConfirm";
+import NotFound from "./routes/NotFound";
 
 const myRouter = createBrowserRouter(
   [
@@ -19,8 +22,21 @@ const myRouter = createBrowserRouter(
           path: "/detail",
           element: <MovieDetail />,
         },
+        {
+          path: "social",
+          children: [
+            {
+              path: "kakao",
+              element: <KakaoConfirm />,
+            },
+            {
+              path: "github",
+              element: <GithubConfirm />,
+            },
+          ],
+        },
       ],
-      errorElement: <h1>404 Not Found</h1>,
+      errorElement: <NotFound />,
     },
   ],
   { basename: "" }
