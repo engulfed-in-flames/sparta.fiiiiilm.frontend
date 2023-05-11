@@ -29,10 +29,6 @@ interface IForm {
   password: string;
 }
 
-interface ILoginResult {
-  result: string;
-}
-
 export default function LoginModal({ isOpen, onClose }: ILoginModalProps) {
   const {
     register,
@@ -77,7 +73,7 @@ export default function LoginModal({ isOpen, onClose }: ILoginModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent userSelect={"none"}>
+      <ModalContent>
         <ModalHeader textAlign={"center"} py={8}>
           <Text fontSize={32}>로그인</Text>
         </ModalHeader>

@@ -3,7 +3,7 @@
 React, React Router, Typescript and Chakra UI💕
 
 - Tanstack Query
-- React Icons
-- cookies
-- axios
 - React Hook Form
+- React Icons
+- js-cookies
+- axios

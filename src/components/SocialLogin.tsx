@@ -13,9 +13,13 @@ export default function SocialLogin() {
   const kakaoSearchParams = new URLSearchParams(kakaoParams).toString();
   const kakaoOauthUrl = `https://kauth.kakao.com/oauth/authorize?${kakaoSearchParams}`;
 
-  const githubParams = {};
+  const githubParams = {
+    client_id: "7c0f8ae30ebf08266229",
+    redirect_uri: "http://127.0.0.1:3000/social/github",
+    scope: "read:user,user:email",
+  };
   const githubSearchParams = new URLSearchParams(githubParams).toString();
-  const githubOauthUrl = "";
+  const githubOauthUrl = `https://github.com/login/oauth/authorize?${githubSearchParams}`;
 
   return (
     <Box>
@@ -28,7 +32,7 @@ export default function SocialLogin() {
       </HStack>
       <VStack spacing={2} py={8}>
         <Button
-          href="#"
+          href={githubOauthUrl}
           as="a"
           leftIcon={<AiFillGithub />}
           w={"100%"}

@@ -89,7 +89,7 @@ export default function Header() {
             borderRadius={"3xl"}
             boxShadow={"md"}
           >
-            <Avatar size={"sm"} />
+            <Avatar src={user?.avatar} size={"sm"} />
           </MenuButton>
           <MenuList>
             {!isUserLoading && !isLoggedIn ? (
