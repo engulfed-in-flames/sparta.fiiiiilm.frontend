@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Collapse,
+  Divider,
   Flex,
   Grid,
   HStack,
@@ -18,7 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { TfiCommentAlt } from "react-icons/tfi";
-import { IFollowVars, IMe } from "../type";
+import { IFollowVars } from "../type";
 import { toggleFollowing } from "../api";
 import { IFollower } from "../type";
 import useUser from "../hooks/useUser";
@@ -229,31 +230,48 @@ export default function Me() {
                   overflowY={"scroll"}
                 >
                   {me?.reviews.map((review) => (
-                    <ListItem key={review.pk} mb={2}>
-                      <HStack spacing={4} color={"black"}>
-                        <VStack alignItems={"flex-start"}>
-                          <Text fontSize={"xl"}>{review.title}</Text>
-                          <Text fontSize={"sm"} color={"gray.600"}>
-                            {review.createdAt}
-                          </Text>
-                          <Text>{review.content}</Text>
-                          <HStack>
-                            {review.likes === 0 ? (
-                              <>
-                                <HiOutlineHeart color={"red"} />
-                              </>
-                            ) : (
-                              <>
-                                <HiHeart color={"red"} />
-                              </>
-                            )}
-                            <Text>{review.likes}</Text>
-                            <TfiCommentAlt />
-                            <Text>{review.comments}</Text>
-                          </HStack>
-                        </VStack>
-                      </HStack>
-                    </ListItem>
+                    <>
+                      <ListItem key={review.pk} w={"full"} mb={2}>
+                        <Flex w={"full"} color={"black"}>
+                          <Flex
+                            w={"full"}
+                            flexDirection={"column"}
+                            alignItems={"flex-start"}
+                          >
+                            <Text fontSize={"xl"} mb={4}>
+                              {review.title}
+                            </Text>
+
+                            <Text mb={4}>{review.content}</Text>
+                            <Flex
+                              w={"full"}
+                              justifyContent={"space-between"}
+                              alignItems={"center"}
+                            >
+                              <HStack>
+                                {review.likes === 0 ? (
+                                  <>
+                                    <HiOutlineHeart color={"red"} />
+                                  </>
+                                ) : (
+                                  <>
+                                    <HiHeart color={"red"} />
+                                  </>
+                                )}
+
+                                <Text>{review.likes}</Text>
+                                <TfiCommentAlt />
+                                <Text>{review.comments}</Text>
+                              </HStack>
+                              <Text fontSize={"sm"} color={"gray.600"}>
+                                {review.createdAt}
+                              </Text>
+                            </Flex>
+                          </Flex>
+                        </Flex>
+                      </ListItem>
+                      <Divider my={4} />
+                    </>
                   ))}
                 </UnorderedList>
               </Collapse>

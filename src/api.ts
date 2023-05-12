@@ -1,31 +1,81 @@
 import axios from "axios";
 import Cookie from "js-cookie";
-import { IFollowVars } from "./type";
+import { IFollowVars, IPostReviewVars } from "./type";
 
 export interface ILoginVars {
   email: string;
   password: string;
 }
 
-// const myInstance = axios.create({
-//   baseURL: "http://13.125.252.32/api/v1/",
-//   withCredentials: true,
-// });
-
 const axiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/v1/",
   withCredentials: true,
 });
 
-// export const fetchLogin = async ({ email, password }: ILoginVars) => {
-//   const response = await myInstance.post("users/token/", {
-//     email,
-//     password,
-//   });
-//   const { access, refresh } = response.data;
-//   Cookie.set("access", access);
-//   Cookie.set("refresh", refresh);
-// };
+export const fetchMovies = async () =>
+  axiosInstance
+    .get("movie/", {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+      },
+    })
+    .then((response) => response.data);
+
+export const fetchRecentReviews = async () =>
+  axiosInstance
+    .get("reviews/recent/", {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+      },
+    })
+    .then((response) => response.data);
+
+export const fetchMovie = async (movieCode: string) =>
+  axiosInstance
+    .get(`movie/${movieCode}/`, {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+      },
+    })
+    .then((response) => response.data);
+
+export const fetchMovieReviews = async (movieCode: string) =>
+  axiosInstance
+    .get(`movie/${movieCode}/reviews/`, {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+      },
+    })
+    .then((response) => response.data);
+
+export const postReview = async ({
+  movie_code,
+  movie_title,
+  title,
+  content,
+}: IPostReviewVars) =>
+  axiosInstance.post(
+    `movie/${movie_code}/reviews/`,
+    { movie_title: movie_title, title: title, content: content },
+    {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+        Authorization: `Bearer ${Cookie.get("access")}`,
+      },
+    }
+  );
+
+export const fetchMe = async () => {
+  if (Cookie.get("access")) {
+    const response = await axiosInstance.get("users/me/", {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+        Authorization: `Bearer ${Cookie.get("access")}`,
+      },
+    });
+    return response.data;
+  }
+};
 
 export const fetchLogin = async ({ email, password }: ILoginVars) => {
   const response = await axiosInstance.post(
@@ -44,26 +94,6 @@ export const fetchLogin = async ({ email, password }: ILoginVars) => {
   Cookie.set("access", access);
   Cookie.set("refresh", refresh);
 };
-
-// export const fetchMe = async () =>
-//   myInstance
-//     .get("users/1/", {
-//       headers: {
-//         // "X-CSRFToken": Cookie.get("csrftoken") || "",
-//         Authorization: `Bearer ${Cookie.get("access")}`,
-//       },
-//     })
-//     .then((response) => response.data);
-
-export const fetchMe = async () =>
-  axiosInstance
-    .get("users/me/", {
-      headers: {
-        "X-CSRFToken": Cookie.get("csrftoken") || "",
-        Authorization: `Bearer ${Cookie.get("access")}`,
-      },
-    })
-    .then((response) => response.data);
 
 export const kakaoLogin = async (code: string) => {
   const response = await axiosInstance.post(

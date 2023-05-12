@@ -3,6 +3,11 @@ import { AnimatePresence, Variants, motion } from "framer-motion";
 import { Box, IconButton, Skeleton, Text, chakra } from "@chakra-ui/react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { IMovie } from "../type";
+
+interface ISliderprops {
+  movies: IMovie[];
+}
 
 const sliderVars: Variants = {
   invisible: (isRightBtn: boolean) => ({
@@ -20,11 +25,9 @@ const InnerSlider = chakra(motion.div, {});
 
 const SliderCard = chakra(motion.div, {});
 
-export default function Slider() {
-  const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+export default function Slider({ movies }: ISliderprops) {
   const PAGE_OFFSET = 3;
-  const pageLength = Math.floor(arr.length / PAGE_OFFSET);
-  const [isLoading] = useState(true);
+  const pageLength = Math.floor(movies.length / PAGE_OFFSET);
   const [page, setPage] = useState(1);
   const [sliderAnimationExit, setSliderAnimationExit] = useState(true);
   const [isRightBtn, setIsRightBtn] = useState(true);
@@ -99,48 +102,52 @@ export default function Slider() {
           exit="disappear"
           transition="0.1s linear"
         >
-          {arr
+          {movies
             .slice(PAGE_OFFSET * (page - 1), PAGE_OFFSET * page)
-            .map((value, index) =>
-              isLoading ? (
-                <Link to={`/detail?movieId=${value}`} key={index}>
-                  <Skeleton
-                    cursor={"pointer"}
-                    position="relative"
-                    aspectRatio={"calc(3/4)"}
-                    minH={60}
-                    bg={"gray.400"}
-                    borderRadius={"md"}
-                  >
-                    <Box
-                      zIndex={99}
-                      position={"absolute"}
-                      top={0}
-                      left={0}
-                      right={0}
-                    >
-                      <Text fontSize={32}>1</Text>
-                    </Box>
-                  </Skeleton>
-                </Link>
-              ) : (
+            .map((movie) => (
+              <Link
+                to={`/detail?movieCode=${movie.movieCode}&rank=${movie.rank}`}
+                key={movie.movieCode}
+              >
                 <SliderCard
-                  key={index}
                   cursor={"pointer"}
                   position="relative"
-                  w={240}
-                  h={320}
-                  bg={"gray.400"}
+                  minH={60}
+                  aspectRatio={"calc(3/4)"}
+                  bgImage={movie.posterPath}
+                  bgPosition={"center"}
+                  bgSize={"cover"}
                   borderRadius={"md"}
                 >
-                  <Box>
-                    <Text>1</Text>
+                  <Box pos={"absolute"} top={-6} left={6}>
+                    <Text fontSize={"8xl"} fontWeight={"bold"} color="white">
+                      {movie.rank}
+                    </Text>
                   </Box>
                 </SliderCard>
-              )
-            )}
+              </Link>
+            ))}
         </InnerSlider>
       </AnimatePresence>
     </OuterSlider>
   );
 }
+
+// <Skeleton
+//   cursor={"pointer"}
+//   position="relative"
+//   aspectRatio={"calc(3/4)"}
+//   minH={60}
+//   bg={"gray.400"}
+//   borderRadius={"md"}
+// >
+//   <Box
+//     zIndex={99}
+//     position={"absolute"}
+//     top={0}
+//     left={0}
+//     right={0}
+//   >
+//     <Text fontSize={32}>1</Text>
+//   </Box>
+// </Skeleton>
