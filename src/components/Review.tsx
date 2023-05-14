@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Avatar,
   Box,
@@ -9,15 +8,19 @@ import {
   VStack,
   chakra,
 } from "@chakra-ui/react";
-import { HiHeart, HiOutlineHeart } from "react-icons/hi";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { IReview } from "../type";
+import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { TfiCommentAlt } from "react-icons/tfi";
+import { IReviewProps } from "../type";
+import { postReviewLike } from "../api";
+import useUser from "../hooks/useUser";
 
 const LikeButton = chakra(motion.button, {});
 
 export default function Review({
-  pk,
+  id,
   user,
   avatar,
   title,
@@ -25,13 +28,27 @@ export default function Review({
   like_count,
   comment_count,
   created_at,
-}: IReview) {
+  liked,
+}: IReviewProps) {
+  const queryClient = useQueryClient();
+  const { isLoggedIn } = useUser();
+
   const createdAt = new Date(created_at).toLocaleString();
   const [date, time] = createdAt.split(",");
-  const [like, setLike] = useState(false);
+  const [isLiked, setIsLiked] = useState(liked);
+  const [likeCount, setLikeCount] = useState(like_count);
+
   const onLikeClick = () => {
-    setLike((prev) => !prev);
+    if (isLoggedIn) {
+      isLiked
+        ? setLikeCount((prev) => prev - 1)
+        : setLikeCount((prev) => prev + 1);
+      setIsLiked((prev) => !prev);
+      postReviewLike(id);
+      queryClient.refetchQueries(["me"]);
+    }
   };
+
   return (
     <Box w={"full"} h={"280px"} minH={"200px"}>
       <Flex justifyContent={"space-between"} alignItems={"flex-start"} mb={8}>
@@ -55,13 +72,13 @@ export default function Review({
                   _hover={{ bg: "rgba(0,0,0,0)" }}
                   bg={"rgba(0,0,0,0)"}
                 >
-                  {like ? (
+                  {isLiked ? (
                     <HiHeart size={20} color="red" />
                   ) : (
                     <HiOutlineHeart size={20} color="red" />
                   )}
                 </LikeButton>
-                <Text>{like_count}</Text>
+                <Text>{likeCount}</Text>
               </HStack>
               <HStack>
                 <TfiCommentAlt />

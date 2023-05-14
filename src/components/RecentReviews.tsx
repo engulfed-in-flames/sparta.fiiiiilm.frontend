@@ -1,20 +1,27 @@
-import { Box, Grid, HStack, Skeleton } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { Grid } from "@chakra-ui/react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import SkeletonRecentReviews from "./SkeletonRecentReviews";
 import { IReview } from "../type";
 import { fetchRecentReviews } from "../api";
-import { useQuery } from "@tanstack/react-query";
 import Review from "./Review";
+import useUser from "../hooks/useUser";
+import { useEffect, useState } from "react";
 
 export default function RecentReviews() {
-  const { isLoading: isReviewLoading, data: reviews } = useQuery<IReview[]>(
+  const { user } = useUser();
+  const { isLoading: isReviewLoading, data } = useQuery<IReview[]>(
     ["recentReviews"],
     fetchRecentReviews
   );
-  const [isLoading] = useState(true);
+
+  const [reviews, setReviews] = useState<IReview[]>();
+  useEffect(() => {
+    setReviews(data!);
+  }, [data]);
+
   return (
     <>
-      {isLoading ? (
+      {!isReviewLoading ? (
         <Grid
           w={"90%"}
           gridTemplateColumns={"1fr 1fr"}
@@ -23,19 +30,24 @@ export default function RecentReviews() {
           mx={"auto"}
         >
           {reviews &&
-            reviews.map((review, index) => (
-              <Review
-                key={index}
-                pk={review.pk}
-                user={review.user}
-                avatar={review.avatar}
-                title={review.title}
-                content={review.content}
-                like_count={review.like_count}
-                comment_count={review.comment_count}
-                created_at={review.created_at}
-              />
-            ))}
+            reviews.map((review, index) => {
+              const liked =
+                user && review.like_user_pk.includes(user.pk) ? true : false;
+              return (
+                <Review
+                  key={index}
+                  id={review.id}
+                  user={review.user}
+                  avatar={review.avatar}
+                  title={review.title}
+                  content={review.content}
+                  like_count={review.like_count}
+                  comment_count={review.comment_count}
+                  created_at={review.created_at}
+                  liked={liked}
+                />
+              );
+            })}
         </Grid>
       ) : (
         <SkeletonRecentReviews />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -12,7 +12,6 @@ import {
   ListItem,
   Text,
   UnorderedList,
-  VStack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,11 +19,16 @@ import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { TfiCommentAlt } from "react-icons/tfi";
 import { IFollowVars } from "../type";
-import { toggleFollowing } from "../api";
+import { invalidateUser, toggleFollowing } from "../api";
 import { IFollower } from "../type";
 import useUser from "../hooks/useUser";
+import useUserOnly from "../hooks/useUserOnly";
 
 export default function Me() {
+  useUserOnly();
+
+  const queryClient = useQueryClient();
+
   const { isOpen: isFollowingOpen, onToggle: onFollowingToggle } =
     useDisclosure();
   const { isOpen: isFollowerOpen, onToggle: onFollowerToggle } =
@@ -34,40 +38,46 @@ export default function Me() {
 
   const { user: me } = useUser();
 
-  const queryClient = useQueryClient();
-
   const [followings, setFollowings] = useState<IFollower[]>();
 
-  useEffect(() => {
-    setFollowings(me?.followings!);
-  }, [me?.followings]);
-
-  const onClick = async ({ userId, isFollow }: IFollowVars) => {
-    const new_followings = await toggleFollowing({ userId, isFollow });
+  const onClickFollow = async ({ userPk, isFollow }: IFollowVars) => {
+    const new_followings = await toggleFollowing({ userPk, isFollow });
     queryClient.refetchQueries(["me"]);
     setFollowings(new_followings);
   };
 
+  const onClickInvalidation = async (userPk: number) => {
+    await invalidateUser(userPk);
+    queryClient.refetchQueries(["me"]);
+  };
+
+  useEffect(() => {
+    if (me) setFollowings(me.followings!);
+  }, [me]);
+
   return (
     <Box w={"90%"} mt={12} mx={"auto"}>
       <Grid gridTemplateColumns={"1fr 4fr"} columnGap={8}>
-        <Flex
-          w={"240px"}
-          flexDirection={"column"}
-          justifyContent={"space-around"}
-          alignItems={"center"}
-          aspectRatio={"calc(3/4)"}
-          boxShadow={"xl"}
-          borderRadius={"md"}
-          py={2}
-          px={6}
-        >
-          <Avatar src={me?.avatar} size={"2xl"} />
-          <Text fontSize={"xl"}>{me?.nickname}</Text>
-          {/* <SkeletonText w={"full"} skeletonHeight={4} noOfLines={4}>
+        {me && (
+          <Flex
+            w={"240px"}
+            flexDirection={"column"}
+            justifyContent={"space-around"}
+            alignItems={"center"}
+            aspectRatio={"calc(3/4)"}
+            boxShadow={"xl"}
+            borderRadius={"md"}
+            py={2}
+            px={6}
+          >
+            <Avatar src={me.avatar} size={"2xl"} />
+            <Text fontSize={"xl"}>{me.nickname}</Text>
+            {/* <SkeletonText w={"full"} skeletonHeight={4} noOfLines={4}>
           </SkeletonText> */}
-          <Text>{me?.intro}</Text>
-        </Flex>
+            <Text>{me.intro}</Text>
+          </Flex>
+        )}
+
         <Flex
           w={"full"}
           minH={"100vh"}
@@ -112,8 +122,8 @@ export default function Me() {
                   overflowY={"scroll"}
                 >
                   {followings &&
-                    followings.map((following) => (
-                      <ListItem key={following.pk} mb={2}>
+                    followings.map((following, index) => (
+                      <ListItem key={index} mb={2}>
                         <Flex justifyContent={"space-between"}>
                           <HStack spacing={4}>
                             <Avatar size={"sm"} />
@@ -121,8 +131,8 @@ export default function Me() {
                           </HStack>
                           <Button
                             onClick={() =>
-                              onClick({
-                                userId: following.pk,
+                              onClickFollow({
+                                userPk: following.pk,
                                 isFollow: false,
                               })
                             }
@@ -171,8 +181,8 @@ export default function Me() {
                   overflowY={"scroll"}
                 >
                   {me?.followers &&
-                    me?.followers.map((follower) => (
-                      <ListItem key={follower.pk} mb={2}>
+                    me?.followers.map((follower, index) => (
+                      <ListItem key={index} mb={2}>
                         <Flex justifyContent={"space-between"}>
                           <HStack spacing={4}>
                             <Avatar size={"sm"} />
@@ -180,8 +190,8 @@ export default function Me() {
                           </HStack>
                           <Button
                             onClick={() =>
-                              onClick({
-                                userId: follower.pk,
+                              onClickFollow({
+                                userPk: follower.pk,
                                 isFollow: true,
                               })
                             }
@@ -230,48 +240,52 @@ export default function Me() {
                   overflowY={"scroll"}
                 >
                   {me?.reviews.map((review) => (
-                    <>
-                      <ListItem key={review.pk} w={"full"} mb={2}>
-                        <Flex w={"full"} color={"black"}>
+                    <ListItem key={review.pk} w={"full"} mb={2}>
+                      <Flex w={"full"} color={"black"}>
+                        <Flex
+                          w={"full"}
+                          flexDirection={"column"}
+                          alignItems={"flex-start"}
+                        >
+                          <Text fontSize={"xl"} mb={4}>
+                            {review.title}
+                          </Text>
+
+                          <Text
+                            mb={4}
+                            whiteSpace={"normal"}
+                            wordBreak={"break-all"}
+                          >
+                            {review.content}
+                          </Text>
                           <Flex
                             w={"full"}
-                            flexDirection={"column"}
-                            alignItems={"flex-start"}
+                            justifyContent={"space-between"}
+                            alignItems={"center"}
                           >
-                            <Text fontSize={"xl"} mb={4}>
-                              {review.title}
+                            <HStack>
+                              {review.likes === 0 ? (
+                                <>
+                                  <HiOutlineHeart color={"red"} />
+                                </>
+                              ) : (
+                                <>
+                                  <HiHeart color={"red"} />
+                                </>
+                              )}
+
+                              <Text>{review.likes}</Text>
+                              <TfiCommentAlt />
+                              <Text>{review.comments}</Text>
+                            </HStack>
+                            <Text fontSize={"sm"} color={"gray.600"}>
+                              {review.createdAt}
                             </Text>
-
-                            <Text mb={4}>{review.content}</Text>
-                            <Flex
-                              w={"full"}
-                              justifyContent={"space-between"}
-                              alignItems={"center"}
-                            >
-                              <HStack>
-                                {review.likes === 0 ? (
-                                  <>
-                                    <HiOutlineHeart color={"red"} />
-                                  </>
-                                ) : (
-                                  <>
-                                    <HiHeart color={"red"} />
-                                  </>
-                                )}
-
-                                <Text>{review.likes}</Text>
-                                <TfiCommentAlt />
-                                <Text>{review.comments}</Text>
-                              </HStack>
-                              <Text fontSize={"sm"} color={"gray.600"}>
-                                {review.createdAt}
-                              </Text>
-                            </Flex>
                           </Flex>
                         </Flex>
-                      </ListItem>
+                      </Flex>
                       <Divider my={4} />
-                    </>
+                    </ListItem>
                   ))}
                 </UnorderedList>
               </Collapse>
@@ -279,7 +293,12 @@ export default function Me() {
           </Box>
           <Flex justifyContent={"flex-end"}>
             <Button mr={2}>수정</Button>
-            <Button colorScheme="red">회원탈퇴</Button>
+            <Button
+              onClick={() => onClickInvalidation(me?.pk!)}
+              colorScheme="red"
+            >
+              회원탈퇴
+            </Button>
           </Flex>
         </Flex>
       </Grid>

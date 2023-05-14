@@ -4,7 +4,6 @@ import {
   Button,
   Flex,
   HStack,
-  IconButton,
   Image,
   Menu,
   MenuButton,
@@ -14,14 +13,13 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { CgMenu } from "react-icons/cg";
-import { FaMoon } from "react-icons/fa";
+import Cookies from "js-cookie";
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
-import { Link } from "react-router-dom";
 import useUser from "../hooks/useUser";
-import Cookies from "js-cookie";
-import { useQueryClient } from "@tanstack/react-query";
 
 export default function Header() {
   const { isUserLoading, user, isLoggedIn } = useUser();
@@ -39,7 +37,7 @@ export default function Header() {
   const queryClient = useQueryClient();
   const toast = useToast();
 
-  const onLogout = () => {
+  const onClickLogout = () => {
     Cookies.remove("access");
     Cookies.remove("refresh");
     queryClient.refetchQueries(["me"]);
@@ -50,6 +48,7 @@ export default function Header() {
       duration: 3000,
     });
   };
+
   return (
     <HStack
       userSelect={"none"}
@@ -71,13 +70,6 @@ export default function Header() {
         </Link>
       </Box>
       <Flex>
-        <IconButton
-          icon={<FaMoon />}
-          aria-label="Night Mode"
-          mr={2}
-          size={"lg"}
-          bg={"white"}
-        />
         <Menu>
           <MenuButton
             as={Button}
@@ -89,7 +81,7 @@ export default function Header() {
             borderRadius={"3xl"}
             boxShadow={"md"}
           >
-            <Avatar src={user?.avatar} size={"sm"} />
+            <Avatar src={user?.avatar} size={"sm"} bgColor={"black"} />
           </MenuButton>
           <MenuList>
             {!isUserLoading && !isLoggedIn ? (
@@ -108,7 +100,7 @@ export default function Header() {
                     <Text fontSize={16}></Text>마이페이지
                   </MenuItem>
                 </Link>
-                <MenuItem onClick={onLogout}>
+                <MenuItem onClick={onClickLogout}>
                   <Text fontSize={16} color={"gray.400"}>
                     로그아웃
                   </Text>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Box,
@@ -13,14 +13,15 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import Movie from "../components/Movie";
 import Review from "../components/Review";
 import { fetchMovie, fetchMovieReviews, postReview } from "../api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { IMovieDetail, IReview } from "../type";
 import SkeletonMovie from "../components/SkeletonMovie";
 import SkeletonReview from "../components/SkeletonReview";
-import { useForm } from "react-hook-form";
+import useUser from "../hooks/useUser";
 
 interface IForm {
   title: string;
@@ -28,25 +29,21 @@ interface IForm {
 }
 
 export default function MovieDetail() {
+  const queryClient = useQueryClient();
+  const { register, handleSubmit } = useForm<IForm>();
+  const { user } = useUser();
   const [searchParams] = useSearchParams();
   const movieCode = searchParams.get("movieCode");
   const rank = Number(searchParams.get("rank"));
+
   const { isLoading: isMovieLoading, data: movie } = useQuery<IMovieDetail>(
     ["movieDetail", movieCode],
     () => fetchMovie(movieCode!)
   );
   const { isLoading: isReviewsLoading, data: reviewsData } = useQuery<
     IReview[]
-  >(["reviews", movieCode], () => fetchMovieReviews(movieCode!), {
-    retry: false,
-  });
-
-  const { register, handleSubmit } = useForm<IForm>();
-
-  const queryClient = useQueryClient();
-
+  >(["reviews", movieCode], () => fetchMovieReviews(movieCode!));
   const [reviews, setReviews] = useState<IReview[]>();
-
   useEffect(() => {
     setReviews(reviewsData);
   }, [reviewsData]);
@@ -67,6 +64,7 @@ export default function MovieDetail() {
       }
     }
   };
+
   return (
     <Box w={"90%"} mx={"auto"}>
       <Box maxW={"1600px"} minW={"880px"} mx={"auto"}>
@@ -86,7 +84,6 @@ export default function MovieDetail() {
         ) : (
           <SkeletonMovie />
         )}
-
         <>
           <Divider mb={12} />
           <Box w={"60%"} mx={"auto"} mb={12}>
@@ -122,19 +119,27 @@ export default function MovieDetail() {
           </Box>
           {!isReviewsLoading ? (
             <VStack spacing={8} w={"80%"} minW={"760px"} mx={"auto"}>
-              {reviews?.map((review, index) => (
-                <Review
-                  key={index}
-                  pk={review.pk}
-                  title={review.title}
-                  content={review.content}
-                  comment_count={review.comment_count}
-                  like_count={review.like_count}
-                  user={review.user}
-                  avatar={review.avatar}
-                  created_at={review.created_at}
-                />
-              ))}
+              {reviews &&
+                reviews.map((review) => {
+                  const liked =
+                    user && review.like_user_pk.includes(user.pk)
+                      ? true
+                      : false;
+                  return (
+                    <Review
+                      key={review.id}
+                      id={review.id}
+                      title={review.title}
+                      content={review.content}
+                      comment_count={review.comment_count}
+                      like_count={review.like_count}
+                      user={review.user}
+                      avatar={review.avatar}
+                      created_at={review.created_at}
+                      liked={liked}
+                    />
+                  );
+                })}
             </VStack>
           ) : (
             <SkeletonReview />

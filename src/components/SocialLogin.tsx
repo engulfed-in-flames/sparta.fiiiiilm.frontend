@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Button, Divider, HStack, Text, VStack } from "@chakra-ui/react";
 import { AiFillGithub } from "react-icons/ai";
 import { RiKakaoTalkFill } from "react-icons/ri";
@@ -6,7 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 
 export default function SocialLogin() {
   const kakaoParams = {
-    client_id: "fb88d01bde4577bb81efb4c4d55db86b",
+    client_id: process.env.REACT_APP_KAKAO_API_KEY!,
     redirect_uri: "http://127.0.0.1:3000/social/kakao",
     response_type: "code",
   };
@@ -14,7 +13,7 @@ export default function SocialLogin() {
   const kakaoOauthUrl = `https://kauth.kakao.com/oauth/authorize?${kakaoSearchParams}`;
 
   const githubParams = {
-    client_id: "7c0f8ae30ebf08266229",
+    client_id: process.env.REACT_APP_GH_CLIENT_ID!,
     redirect_uri: "http://127.0.0.1:3000/social/github",
     scope: "read:user,user:email",
   };

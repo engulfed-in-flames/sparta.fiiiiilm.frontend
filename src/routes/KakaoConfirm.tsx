@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
 import { Heading, Spinner, VStack, useToast } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { kakaoLogin } from "../api";
@@ -28,7 +28,7 @@ export default function KakaoConfirm() {
   };
   useEffect(() => {
     confirmKakao();
-  }, []);
+  });
 
   return (
     <VStack mt={120}>

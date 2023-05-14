@@ -1,7 +1,6 @@
-import React from "react";
 import { Box, Flex, Grid, HStack, Text, VStack } from "@chakra-ui/react";
-import { IMovieDetail } from "../type";
 import { FaStar } from "react-icons/fa";
+import { IMovieDetail } from "../type";
 
 export default function Movie({
   title,

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { AnimatePresence, Variants, motion } from "framer-motion";
-import { Box, IconButton, Skeleton, Text, chakra } from "@chakra-ui/react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { Box, IconButton, Text, chakra } from "@chakra-ui/react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { AnimatePresence, Variants, motion } from "framer-motion";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { IMovie } from "../type";
 
 interface ISliderprops {
@@ -47,10 +47,6 @@ export default function Slider({ movies }: ISliderprops) {
     setSliderAnimationExit(false);
     setPage((prev) => (prev >= 1 && prev < pageLength ? prev + 1 : 1));
   };
-
-  useEffect(() => {
-    console.log("Updated page: ", page);
-  }, [page]);
 
   return (
     <OuterSlider position={"relative"} minW={"660px"} aspectRatio={"2/0.85"}>
@@ -119,7 +115,7 @@ export default function Slider({ movies }: ISliderprops) {
                   bgSize={"cover"}
                   borderRadius={"md"}
                 >
-                  <Box pos={"absolute"} top={-6} left={6}>
+                  <Box pos={"absolute"} top={-6} left={4}>
                     <Text fontSize={"8xl"} fontWeight={"bold"} color="white">
                       {movie.rank}
                     </Text>

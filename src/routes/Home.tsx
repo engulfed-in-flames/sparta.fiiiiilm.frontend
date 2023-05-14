@@ -1,9 +1,9 @@
 import { Box, Divider, Heading } from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import RecentReviews from "../components/RecentReviews";
 import Slider from "../components/Slider";
 import { IMovie } from "../type";
 import { fetchMovies } from "../api";
-import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
   const { data: movies } = useQuery<IMovie[]>(["movies"], fetchMovies);

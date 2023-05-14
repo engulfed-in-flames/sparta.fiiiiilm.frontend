@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Button,
   Input,
@@ -13,11 +12,11 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import { MdAlternateEmail, MdLock } from "react-icons/md";
 import SocialLogin from "./SocialLogin";
-import { useForm } from "react-hook-form";
 import { fetchLogin } from "../api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface ILoginModalProps {
   isOpen: boolean;
@@ -30,20 +29,12 @@ interface IForm {
 }
 
 export default function LoginModal({ isOpen, onClose }: ILoginModalProps) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<IForm>();
+  const { register, handleSubmit, reset } = useForm<IForm>();
 
   const queryClient = useQueryClient();
   const toast = useToast();
 
   const mutation = useMutation(fetchLogin, {
-    onMutate: () => {
-      console.log("Mutation is in progess.");
-    },
     onSuccess: () => {
       toast({
         title: "로그인",
@@ -68,6 +59,7 @@ export default function LoginModal({ isOpen, onClose }: ILoginModalProps) {
 
   const onSubmit = ({ email, password }: IForm) => {
     mutation.mutate({ email, password });
+    reset();
   };
 
   return (

@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Avatar,
   Box,
@@ -10,6 +9,7 @@ import {
   SkeletonText,
   VStack,
 } from "@chakra-ui/react";
+
 export default function SkeletonReview() {
   return (
     <Box userSelect={"none"} w={"full"} h={"280px"} minH={"200px"}>

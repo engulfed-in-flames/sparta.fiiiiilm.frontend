@@ -1,60 +1,55 @@
 import axios from "axios";
 import Cookie from "js-cookie";
-import { IFollowVars, IPostReviewVars } from "./type";
-
-export interface ILoginVars {
-  email: string;
-  password: string;
-}
+import { IFollowVars, ILoginVars, IPostReviewVars } from "./type";
 
 const axiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/v1/",
   withCredentials: true,
 });
 
-export const fetchMovies = async () =>
-  axiosInstance
-    .get("movie/", {
-      headers: {
-        "X-CSRFToken": Cookie.get("csrftoken") || "",
-      },
-    })
-    .then((response) => response.data);
+export const fetchMovies = async () => {
+  const response = await axiosInstance.get("movie/", {
+    headers: {
+      "X-CSRFToken": Cookie.get("csrftoken") || "",
+    },
+  });
+  return response.data;
+};
 
-export const fetchRecentReviews = async () =>
-  axiosInstance
-    .get("reviews/recent/", {
-      headers: {
-        "X-CSRFToken": Cookie.get("csrftoken") || "",
-      },
-    })
-    .then((response) => response.data);
+export const fetchRecentReviews = async () => {
+  const response = await axiosInstance.get("reviews/recent/", {
+    headers: {
+      "X-CSRFToken": Cookie.get("csrftoken") || "",
+    },
+  });
+  return response.data;
+};
 
-export const fetchMovie = async (movieCode: string) =>
-  axiosInstance
-    .get(`movie/${movieCode}/`, {
-      headers: {
-        "X-CSRFToken": Cookie.get("csrftoken") || "",
-      },
-    })
-    .then((response) => response.data);
+export const fetchMovie = async (movieCode: string) => {
+  const response = await axiosInstance.get(`movie/${movieCode}/`, {
+    headers: {
+      "X-CSRFToken": Cookie.get("csrftoken") || "",
+    },
+  });
+  return response.data;
+};
 
-export const fetchMovieReviews = async (movieCode: string) =>
-  axiosInstance
-    .get(`movie/${movieCode}/reviews/`, {
-      headers: {
-        "X-CSRFToken": Cookie.get("csrftoken") || "",
-      },
-    })
-    .then((response) => response.data);
+export const fetchMovieReviews = async (movieCode: string) => {
+  const response = await axiosInstance.get(`movie/${movieCode}/reviews/`, {
+    headers: {
+      "X-CSRFToken": Cookie.get("csrftoken") || "",
+    },
+  });
+  return response.data;
+};
 
 export const postReview = async ({
   movie_code,
   movie_title,
   title,
   content,
-}: IPostReviewVars) =>
-  axiosInstance.post(
+}: IPostReviewVars) => {
+  const response = await axiosInstance.post(
     `movie/${movie_code}/reviews/`,
     { movie_title: movie_title, title: title, content: content },
     {
@@ -64,17 +59,31 @@ export const postReview = async ({
       },
     }
   );
+  return response.status;
+};
 
-export const fetchMe = async () => {
-  if (Cookie.get("access")) {
-    const response = await axiosInstance.get("users/me/", {
+export const postReviewLike = async (id: number) => {
+  const response = await axiosInstance.post(
+    `reviews/${id}/like/`,
+    {},
+    {
       headers: {
         "X-CSRFToken": Cookie.get("csrftoken") || "",
         Authorization: `Bearer ${Cookie.get("access")}`,
       },
-    });
-    return response.data;
-  }
+    }
+  );
+  return response.status;
+};
+
+export const fetchMe = async () => {
+  const response = await axiosInstance.get("users/me/", {
+    headers: {
+      "X-CSRFToken": Cookie.get("csrftoken") || "",
+      Authorization: `Bearer ${Cookie.get("access")}`,
+    },
+  });
+  return response.data;
 };
 
 export const fetchLogin = async ({ email, password }: ILoginVars) => {
@@ -139,18 +148,30 @@ export const githubLogin = async (code: string) => {
   }
 };
 
-export const toggleFollowing = async ({ userId, isFollow }: IFollowVars) =>
-  axiosInstance
-    .post(
-      `users/${userId}/follow/`,
-      {
-        is_follow: isFollow,
+export const invalidateUser = async (userPk: number) => {
+  const response = await axiosInstance.delete(`users/${userPk}/`, {
+    headers: {
+      "X-CSRFToken": Cookie.get("csrftoken") || "",
+      Authorization: `Bearer ${Cookie.get("access")}`,
+    },
+  });
+  Cookie.remove("access");
+  Cookie.remove("refresh");
+  return response.status;
+};
+
+export const toggleFollowing = async ({ userPk, isFollow }: IFollowVars) => {
+  const response = await axiosInstance.post(
+    `users/${userPk}/follow/`,
+    {
+      is_follow: isFollow,
+    },
+    {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+        Authorization: `Bearer ${Cookie.get("access")}`,
       },
-      {
-        headers: {
-          "X-CSRFToken": Cookie.get("csrftoken") || "",
-          Authorization: `Bearer ${Cookie.get("access")}`,
-        },
-      }
-    )
-    .then((response) => response.data);
+    }
+  );
+  return response.data;
+};
