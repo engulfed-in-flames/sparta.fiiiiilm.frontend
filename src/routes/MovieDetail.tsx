@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -13,6 +11,8 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import Movie from "../components/Movie";

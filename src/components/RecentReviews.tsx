@@ -1,5 +1,5 @@
 import { Grid } from "@chakra-ui/react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import SkeletonRecentReviews from "./SkeletonRecentReviews";
 import { IReview } from "../type";
 import { fetchRecentReviews } from "../api";
