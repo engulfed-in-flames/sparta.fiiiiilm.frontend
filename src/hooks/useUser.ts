@@ -1,14 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchMe } from "../api";
-import { IMe } from "../type";
+import { IMe, IUseUserProps } from "../type";
+import { useOutletContext } from "react-router-dom";
 
-export default function useUser() {
-  const { isLoading, data, isError } = useQuery<IMe>(["me"], fetchMe, {
+export function useUser() {
+  const { isLoading, data } = useQuery<IMe>(["me"], fetchMe, {
     retry: false,
   });
   return {
     isUserLoading: isLoading,
-    user: data,
-    isLoggedIn: !isError,
+    user: data || null,
   };
+}
+
+export function useOutletContextUser() {
+  return useOutletContext<IUseUserProps>();
 }

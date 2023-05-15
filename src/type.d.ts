@@ -25,14 +25,9 @@ export interface IMe {
   reviews: IMeReview[];
 }
 
-export interface ILoginVars {
-  email: string;
-  password: string;
-}
-
-export interface IFollowVars {
-  userPk: number;
-  isFollow: boolean;
+export interface IUseUserProps {
+  isUserLoading: Boolean;
+  user: IMe | null;
 }
 
 export interface IMovie {
@@ -59,10 +54,10 @@ export interface IReview {
   content: string;
   comment_count: number;
   like_count: number;
+  like_user_pk: number[];
   user: string;
   avatar: string;
   movie_title?: string;
-  like_user_pk: number[];
   created_at: string;
 }
 
@@ -76,7 +71,18 @@ export interface IReviewProps {
   avatar: string;
   movie_title?: string;
   created_at: string;
-  liked?: boolean;
+  isLiked: boolean;
+}
+
+// Interface for Backend API
+export interface ILoginVars {
+  email: string;
+  password: string;
+}
+
+export interface IFollowVars {
+  userPk: number;
+  isFollow: boolean;
 }
 
 export interface IPostReviewVars {

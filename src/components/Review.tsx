@@ -15,35 +15,38 @@ import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { TfiCommentAlt } from "react-icons/tfi";
 import { IReviewProps } from "../type";
 import { postReviewLike } from "../api";
-import useUser from "../hooks/useUser";
+import { useOutletContextUser } from "../hooks/useUser";
 
 const LikeButton = chakra(motion.button, {});
 
 export default function Review({
   id,
-  user,
+  user: nickname,
   avatar,
   title,
   content,
   like_count,
   comment_count,
   created_at,
-  liked,
+  isLiked,
 }: IReviewProps) {
   const queryClient = useQueryClient();
-  const { isLoggedIn } = useUser();
+  const { user } = useOutletContextUser();
+
+  const [likeCount, setLikeCount] = useState(like_count);
 
   const createdAt = new Date(created_at).toLocaleString();
   const [date, time] = createdAt.split(",");
-  const [isLiked, setIsLiked] = useState(liked);
-  const [likeCount, setLikeCount] = useState(like_count);
+  const dateTime = time.includes("PM")
+    ? `${date} 오후 ${time.trim().replace("PM", "")}`
+    : `${date} 오전 ${time.trim().replace("AM", "")}`;
 
   const onLikeClick = () => {
-    if (isLoggedIn) {
+    if (user) {
       isLiked
         ? setLikeCount((prev) => prev - 1)
         : setLikeCount((prev) => prev + 1);
-      setIsLiked((prev) => !prev);
+      // setIsLiked((prev) => !prev);
       postReviewLike(id);
       queryClient.refetchQueries(["me"]);
     }
@@ -59,7 +62,7 @@ export default function Review({
           <Text fontSize={18} fontWeight={"bold"}>
             {title}
           </Text>
-          <Text color={"blackAlpha.600"}>{user}</Text>
+          <Text color={"blackAlpha.600"}>{nickname}</Text>
           <Text whiteSpace={"normal"} wordBreak={"break-all"}>
             {content}
           </Text>
@@ -86,12 +89,7 @@ export default function Review({
               </HStack>
             </HStack>
 
-            <Text>
-              {time.includes("PM")
-                ? `오후 ${time.trim().replace("PM", "")}`
-                : `오전 ${time.trim().replace("AM", "")}}`}
-              {date}
-            </Text>
+            <Text>{dateTime}</Text>
           </Flex>
         </VStack>
       </Flex>

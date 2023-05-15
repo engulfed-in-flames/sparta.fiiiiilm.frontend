@@ -77,13 +77,20 @@ export const postReviewLike = async (id: number) => {
 };
 
 export const fetchMe = async () => {
-  const response = await axiosInstance.get("users/me/", {
-    headers: {
-      "X-CSRFToken": Cookie.get("csrftoken") || "",
-      Authorization: `Bearer ${Cookie.get("access")}`,
-    },
-  });
-  return response.data;
+  try {
+    const response = await axiosInstance.get("users/me/", {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+        Authorization: `Bearer ${Cookie.get("access")}`,
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error("Login failed");
+    }
+    return response.data;
+  } catch (e) {
+    return null;
+  }
 };
 
 export const fetchLogin = async ({ email, password }: ILoginVars) => {

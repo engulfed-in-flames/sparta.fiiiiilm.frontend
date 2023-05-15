@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import useUser from "./useUser";
+import { useUser } from "./useUser";
 import { useEffect } from "react";
 
 export default function useUserOnly() {
-  const { isUserLoading, isLoggedIn } = useUser();
+  const { isUserLoading, user } = useUser();
   const navigate = useNavigate();
   useEffect(() => {
-    if (isUserLoading || !isLoggedIn) navigate("/");
-  }, [isUserLoading, isLoggedIn, navigate]);
+    if (isUserLoading || user) navigate("/");
+  }, [isUserLoading, user, navigate]);
 }

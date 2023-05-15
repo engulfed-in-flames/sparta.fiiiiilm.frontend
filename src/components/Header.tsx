@@ -19,10 +19,9 @@ import { CgMenu } from "react-icons/cg";
 import Cookies from "js-cookie";
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
-import useUser from "../hooks/useUser";
+import { IUseUserProps } from "../type";
 
-export default function Header() {
-  const { isUserLoading, user, isLoggedIn } = useUser();
+export default function Header({ isUserLoading, user }: IUseUserProps) {
   const {
     isOpen: isLoginOpen,
     onOpen: onLoginOpen,
@@ -34,8 +33,8 @@ export default function Header() {
     onClose: onSignupClose,
   } = useDisclosure();
 
-  const queryClient = useQueryClient();
   const toast = useToast();
+  const queryClient = useQueryClient();
 
   const onClickLogout = () => {
     Cookies.remove("access");
@@ -45,7 +44,6 @@ export default function Header() {
       title: "로그아웃",
       status: "success",
       position: "bottom-right",
-      duration: 3000,
     });
   };
 
@@ -84,7 +82,7 @@ export default function Header() {
             <Avatar src={user?.avatar} size={"sm"} bgColor={"black"} />
           </MenuButton>
           <MenuList>
-            {!isUserLoading && !isLoggedIn ? (
+            {!isUserLoading && !user ? (
               <>
                 <MenuItem onClick={onLoginOpen}>
                   <Text fontSize={18}>로그인</Text>

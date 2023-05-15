@@ -11,9 +11,12 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  UseQueryResult,
+  useQueries,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import Movie from "../components/Movie";
 import Review from "../components/Review";
@@ -21,7 +24,7 @@ import { fetchMovie, fetchMovieReviews, postReview } from "../api";
 import { IMovieDetail, IReview } from "../type";
 import SkeletonMovie from "../components/SkeletonMovie";
 import SkeletonReview from "../components/SkeletonReview";
-import useUser from "../hooks/useUser";
+import { useOutletContextUser } from "../hooks/useUser";
 
 interface IForm {
   title: string;
@@ -31,22 +34,29 @@ interface IForm {
 export default function MovieDetail() {
   const queryClient = useQueryClient();
   const { register, handleSubmit } = useForm<IForm>();
-  const { user } = useUser();
+  const { isUserLoading, user } = useOutletContextUser();
   const [searchParams] = useSearchParams();
   const movieCode = searchParams.get("movieCode");
   const rank = Number(searchParams.get("rank"));
 
-  const { isLoading: isMovieLoading, data: movie } = useQuery<IMovieDetail>(
-    ["movieDetail", movieCode],
-    () => fetchMovie(movieCode!)
-  );
-  const { isLoading: isReviewsLoading, data: reviewsData } = useQuery<
-    IReview[]
-  >(["reviews", movieCode], () => fetchMovieReviews(movieCode!));
-  const [reviews, setReviews] = useState<IReview[]>();
-  useEffect(() => {
-    setReviews(reviewsData);
-  }, [reviewsData]);
+  const [
+    { isLoading: isMovieLoading, data: movie },
+    { isLoading: isReviewsLoading, data: reviews },
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: ["movieDetal", movieCode],
+        queryFn: () => fetchMovie(movieCode!),
+      },
+      {
+        queryKey: ["reviews", movieCode],
+        queryFn: () => fetchMovieReviews(movieCode!),
+      },
+    ],
+  }) as [
+    UseQueryResult<IMovieDetail, unknown>,
+    UseQueryResult<IReview[], unknown>
+  ];
 
   const onSubmit = async (data: IForm) => {
     if (movieCode && movie) {
@@ -68,19 +78,17 @@ export default function MovieDetail() {
   return (
     <Box w={"90%"} mx={"auto"}>
       <Box maxW={"1600px"} minW={"880px"} mx={"auto"}>
-        {!isMovieLoading ? (
-          movie && (
-            <Movie
-              title={movie.title}
-              genre={movie.genre}
-              overview={movie.overview}
-              releaseDate={movie.releaseDate}
-              runtime={movie.runtime}
-              rating={movie.rating}
-              posterPath={movie.posterPath}
-              rank={rank}
-            />
-          )
+        {!isMovieLoading && movie ? (
+          <Movie
+            title={movie.title}
+            genre={movie.genre}
+            overview={movie.overview}
+            releaseDate={movie.releaseDate}
+            runtime={movie.runtime}
+            rating={movie.rating}
+            posterPath={movie.posterPath}
+            rank={rank}
+          />
         ) : (
           <SkeletonMovie />
         )}
@@ -117,29 +125,28 @@ export default function MovieDetail() {
           <Box w={"80%"} mx={"auto"} mb={12}>
             <Heading>관람평</Heading>
           </Box>
-          {!isReviewsLoading ? (
+          {!isReviewsLoading && !isUserLoading ? (
             <VStack spacing={8} w={"80%"} minW={"760px"} mx={"auto"}>
-              {reviews &&
-                reviews.map((review) => {
-                  const liked =
-                    user && review.like_user_pk.includes(user.pk)
-                      ? true
-                      : false;
-                  return (
-                    <Review
-                      key={review.id}
-                      id={review.id}
-                      title={review.title}
-                      content={review.content}
-                      comment_count={review.comment_count}
-                      like_count={review.like_count}
-                      user={review.user}
-                      avatar={review.avatar}
-                      created_at={review.created_at}
-                      liked={liked}
-                    />
-                  );
-                })}
+              {reviews?.map((review) => {
+                return (
+                  <Review
+                    key={review.id}
+                    id={review.id}
+                    title={review.title}
+                    content={review.content}
+                    comment_count={review.comment_count}
+                    like_count={review.like_count}
+                    user={review.user}
+                    avatar={review.avatar}
+                    created_at={review.created_at}
+                    isLiked={
+                      user && review.like_user_pk.includes(user?.pk)
+                        ? true
+                        : false
+                    }
+                  />
+                );
+              })}
             </VStack>
           ) : (
             <SkeletonReview />
