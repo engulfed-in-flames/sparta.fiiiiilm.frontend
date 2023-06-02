@@ -1,6 +1,11 @@
 import axios from "axios";
 import Cookie from "js-cookie";
-import { IFollowVars, ILoginVars, IPostReviewVars } from "./type";
+import {
+  IFollowVars,
+  ILoginVars,
+  IPostReviewVars,
+  ISingupFormValues,
+} from "./type";
 
 const axiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/v1/",
@@ -165,6 +170,25 @@ export const invalidateUser = async (userPk: number) => {
   Cookie.remove("access");
   Cookie.remove("refresh");
   return response.status;
+};
+
+export const postSignup = async (data: ISingupFormValues) => {
+  try {
+    const response = await axiosInstance.post(
+      `users/signup/`,
+      {
+        ...data,
+      },
+      {
+        headers: {
+          "X-CSRFToken": Cookie.get("csrftoken") || "",
+        },
+      }
+    );
+    return response.status;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const toggleFollowing = async ({ userPk, isFollow }: IFollowVars) => {

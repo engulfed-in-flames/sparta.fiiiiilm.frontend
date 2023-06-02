@@ -13,7 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { MdAlternateEmail, MdLock } from "react-icons/md";
 import SocialLogin from "./SocialLogin";
 import { fetchLogin } from "../api";
@@ -57,9 +57,8 @@ export default function LoginModal({ isOpen, onClose }: ILoginModalProps) {
     },
   });
 
-  const onSubmit = ({ email, password }: IForm) => {
+  const onSubmit: SubmitHandler<IForm> = ({ email, password }) => {
     mutation.mutate({ email, password });
-    reset();
   };
 
   return (
