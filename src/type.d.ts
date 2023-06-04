@@ -91,3 +91,10 @@ export interface IPostReviewVars {
   title: string;
   content: string;
 }
+
+interface ISingupFormValues {
+  email: string;
+  password1: string;
+  password2: string;
+  nickname: string;
+}
