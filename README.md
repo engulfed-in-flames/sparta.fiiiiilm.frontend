@@ -15,7 +15,7 @@ npm install -y
 npm start
 ```
 
-## Libraries used
+## Packages used
 
 React, React Router, Typescript and Chakra UI💕
 
