@@ -6,7 +6,7 @@
 2. Install `node_modules`.
 
 ```zsh
-npm install -y
+npm i
 ```
 
 3. Run the project.
